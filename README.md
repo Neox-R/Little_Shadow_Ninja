@@ -271,7 +271,6 @@ PROJECT RULES FOLLOWED:
 🎯 YOUR MISSION
 ═══════════════════════════════════════════════════════════════════
 
-You now have a complete, working stealth system!
 
 IMMEDIATE GOALS:
   1. Follow QUICK_START.txt to get it running
@@ -280,7 +279,6 @@ IMMEDIATE GOALS:
   4. Build a small test level
 
 NEXT MILESTONE:
-  Once you're comfortable with stealth, we'll add:
   • Bayonetta/DMC-style combat
   • Seamless state transitions
   • Combo systems & style ranks
@@ -290,5 +288,4 @@ NEXT MILESTONE:
 
 Ready to become a shadow ninja? Let's go! 🥷✨
 
-Questions? Check the docs or ask for help!
 ═══════════════════════════════════════════════════════════════════

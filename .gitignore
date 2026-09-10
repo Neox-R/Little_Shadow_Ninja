@@ -1,0 +1,49 @@
+# =========================
+# Unity generated folders
+# =========================
+
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Ll]ogs/
+UserSettings/
+MemoryCaptures/
+
+# Unity builds
+[Bb]uild/
+[Bb]uilds/
+
+# =========================
+# Editors / IDE
+# =========================
+
+.vs/
+.vscode/
+.idea/
+
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+
+# =========================
+# Bezi local settings
+# =========================
+
+.bezisidekick/
+
+# =========================
+# Operating system files
+# =========================
+
+.DS_Store
+Thumbs.db
+
+# =========================
+# Unity crash reports
+# =========================
+
+sysinfo.txt

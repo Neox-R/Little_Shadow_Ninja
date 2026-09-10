@@ -1,0 +1,219 @@
+═══════════════════════════════════════════════════════════════════
+  LITTLE SHADOW NINJA - STEALTH SYSTEM SETUP GUIDE
+═══════════════════════════════════════════════════════════════════
+
+This guide will help you set up your playable stealth prototype.
+
+═══════════════════════════════════════════════════════════════════
+STEP 1: CREATE LAYERS AND TAGS
+═══════════════════════════════════════════════════════════════════
+
+LAYERS (Edit > Project Settings > Tags and Layers):
+  - Player
+  - Enemy
+  - Shadow
+  - Cover
+  - Ground
+
+TAGS (Edit > Project Settings > Tags and Layers):
+  - Shadow (for shadow zones)
+  - Enemy (for enemy AI)
+
+═══════════════════════════════════════════════════════════════════
+STEP 2: SETUP INPUT ACTIONS
+═══════════════════════════════════════════════════════════════════
+
+Option A - Use Starter Assets Input:
+  The Unity Starter Assets already includes a PlayerInput component.
+  Simply add these new actions to the existing Input Actions asset:
+  
+  1. Find: /Assets/StarterAssets/InputSystem/StarterAssetsInputs.inputactions
+  2. Add these actions:
+     - Crouch (Button, Keyboard: C, Gamepad: B)
+     - Sprint (Button, Hold, Keyboard: Left Shift, Gamepad: Left Stick Press)
+
+Option B - Wire up your custom PlayerController:
+  If you want to use the custom PlayerController instead of Starter Assets:
+  
+  1. Create a PlayerInput component on your player
+  2. Wire OnMove, OnCrouch, OnSprint to the respective methods
+
+═══════════════════════════════════════════════════════════════════
+STEP 3: BAKE NAVMESH
+═══════════════════════════════════════════════════════════════════
+
+1. Select your ground/floor GameObjects
+2. In Inspector, make sure they're marked as "Navigation Static"
+3. Window > AI > Navigation
+4. Click "Bake" tab
+5. Click "Bake" button
+
+If you don't have a NavMeshSurface component:
+  1. Create empty GameObject named "Navigation"
+  2. Add Component > NavMesh Surface
+  3. Click "Bake"
+
+═══════════════════════════════════════════════════════════════════
+STEP 4: SETUP PLAYER
+═══════════════════════════════════════════════════════════════════
+
+Option A - Using Starter Assets Character:
+  1. Find prefab: /Assets/StarterAssets/ThirdPersonController/Prefabs/NestedParentArmature
+  2. Drag into scene
+  3. Add these scripts to the PlayerArmature GameObject:
+     - PlayerController
+     - PlayerVisibility
+  4. Set layer to "Player"
+  5. Set tag to "Player"
+
+Option B - Create Simple Player:
+  1. Create a Capsule (3D Object > Capsule)
+  2. Name it "Player"
+  3. Add components:
+     - Character Controller (radius: 0.5, height: 2)
+     - Player Input
+     - PlayerController
+     - PlayerVisibility
+  4. Set layer to "Player"
+  5. Set tag to "Player"
+
+═══════════════════════════════════════════════════════════════════
+STEP 5: SETUP ENEMY
+═══════════════════════════════════════════════════════════════════
+
+1. Create a Capsule (3D Object > Capsule)
+2. Name it "Enemy"
+3. Change color (create/assign material)
+4. Add components:
+   - Nav Mesh Agent
+   - EnemyAwareness
+   - EnemyVision
+   - EnemyPatrol
+5. Set layer to "Enemy"
+6. Set tag to "Enemy"
+
+Configure EnemyVision:
+   - Cover Layer: Select "Cover" layer
+
+Create Waypoints:
+   1. Create empty GameObjects for patrol points
+   2. Name them "Waypoint_1", "Waypoint_2", etc.
+   3. Position them around your level
+   4. Assign them to the Enemy's EnemyPatrol waypoints array
+
+═══════════════════════════════════════════════════════════════════
+STEP 6: CREATE ENVIRONMENT
+═══════════════════════════════════════════════════════════════════
+
+Ground:
+  - Create Plane or Cube for floor
+  - Set layer to "Ground"
+  - Mark as "Navigation Static"
+
+Cover Objects (walls, boxes, etc.):
+  - Create Cubes for walls/cover
+  - Set layer to "Cover"
+  - Mark as "Navigation Static"
+
+Shadow Zones:
+  1. Create empty GameObject
+  2. Name it "ShadowZone"
+  3. Add ShadowZone script
+  4. Add BoxCollider (automatically added)
+  5. Scale to cover shadowy areas
+  6. Place under platforms, behind walls, in corners
+
+═══════════════════════════════════════════════════════════════════
+STEP 7: ADD ALERT MANAGER
+═══════════════════════════════════════════════════════════════════
+
+1. Create empty GameObject named "AlertManager"
+2. Add AlertManager script
+3. Leave in scene (it will auto-register enemies)
+
+═══════════════════════════════════════════════════════════════════
+STEP 8: SETUP CAMERA
+═══════════════════════════════════════════════════════════════════
+
+If using Starter Assets:
+  - Camera is already set up with Cinemachine
+  - Just ensure it's following your player
+
+If creating from scratch:
+  1. Position Main Camera behind/above player
+  2. Optional: Install Cinemachine package
+  3. Add virtual camera following player
+
+═══════════════════════════════════════════════════════════════════
+TESTING CHECKLIST
+═══════════════════════════════════════════════════════════════════
+
+✓ Player can move with WASD/Arrow Keys
+✓ Player can crouch with C
+✓ Player can sprint with Left Shift
+✓ Enemy patrols between waypoints
+✓ Enemy detects player when in line of sight
+✓ Enemy FOV cone visible in Scene view (select enemy)
+✓ Shadow zones show dark transparent boxes in Scene view
+✓ Player visibility changes when entering shadows (check Console)
+✓ Enemy state changes appear in Console logs
+✓ Enemy chases player when fully alerted
+✓ Enemy returns to patrol after losing player
+
+═══════════════════════════════════════════════════════════════════
+QUICK PROTOTYPING TIPS
+═══════════════════════════════════════════════════════════════════
+
+1. Use primitives (Cubes, Capsules) for everything initially
+2. Use ProBuilder (built into URP) for quick level layouts
+3. Color-code objects:
+   - Player: Blue
+   - Enemies: Red
+   - Cover: Gray
+   - Shadow zones: Dark/Black tint
+4. Test with just 1 enemy first
+5. Make waypoints visible with small spheres/cubes
+
+═══════════════════════════════════════════════════════════════════
+NEXT STEPS AFTER PROTOTYPE WORKS
+═══════════════════════════════════════════════════════════════════
+
+1. Add sound detection system
+2. Add player abilities (shadow teleport, etc.)
+3. Add UI elements (visibility meter, enemy alert indicators)
+4. Start planning combat system integration
+5. Add animations
+6. Add sound effects
+7. Replace primitives with actual assets
+
+═══════════════════════════════════════════════════════════════════
+TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════
+
+Player not moving:
+  - Check Input Actions are properly connected
+  - Check Character Controller is on Player
+  - Check ground has collider
+
+Enemy not patrolling:
+  - Check NavMesh is baked
+  - Check waypoints are assigned
+  - Check Nav Mesh Agent component exists
+
+Enemy not detecting player:
+  - Check player has "Player" tag
+  - Check layers are set correctly
+  - Check Cover Layer mask in EnemyVision
+  - Look at FOV cone in Scene view
+
+Player not hiding in shadows:
+  - Check ShadowZone has "Shadow" tag
+  - Check BoxCollider is set to "Is Trigger"
+  - Check PlayerVisibility debug logs in Console
+
+═══════════════════════════════════════════════════════════════════
+
+For questions or issues, check the Console for debug messages!
+All systems include debug logging to help you understand what's happening.
+
+Good luck with your prototype! 🥷

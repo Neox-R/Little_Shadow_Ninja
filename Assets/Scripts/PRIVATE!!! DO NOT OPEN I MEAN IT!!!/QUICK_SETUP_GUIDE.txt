@@ -1,0 +1,256 @@
+═══════════════════════════════════════════════════════════════════
+  🚀 QUICK SETUP - DIAPER SYSTEM IN 5 MINUTES
+═══════════════════════════════════════════════════════════════════
+
+Follow these steps to activate the ABDL mechanics!
+
+═══════════════════════════════════════════════════════════════════
+STEP 1: Add Components to Player (2 minutes)
+═══════════════════════════════════════════════════════════════════
+
+1. In Hierarchy, select your Player GameObject
+
+2. Click "Add Component" button in Inspector
+
+3. Add these components ONE BY ONE:
+   
+   a) Type: "DiaperState" → Add
+   b) Type: "BladderBowelSystem" → Add  
+   c) Type: "PlayerDiaperIntegration" → Add
+
+4. Configure BladderBowelSystem:
+   • Find "Diaper State" field
+   • Drag the DiaperState component into it
+   (Or click the circle → select DiaperState)
+
+5. Configure PlayerDiaperIntegration:
+   • Drag PlayerController into "Player Controller" field
+   • Drag PlayerVisibility into "Player Visibility" field
+   • Drag DiaperState into "Diaper State" field
+   • Drag BladderBowelSystem into "Bladder Bowel" field
+
+═══════════════════════════════════════════════════════════════════
+STEP 2: Setup Input for P Key (1 minute)
+═══════════════════════════════════════════════════════════════════
+
+OPTION A - Using New Input System:
+
+1. Find your Input Actions asset in Project window
+   (Probably in Assets/Settings or similar)
+
+2. Double-click to open Input Actions window
+
+3. Click "+" to add new action
+   • Name it: "Potty"
+   • Action Type: Button
+   • Binding: Keyboard > P
+
+4. Click "Save Asset"
+
+5. Back in Player Inspector:
+   • Find "Player Input" component
+   • Under "Events" section
+   • Add new event for "Potty"
+   • Drag Player GameObject into the object field
+   • Select: BladderBowelSystem → OnPottyInput
+
+
+OPTION B - Simple Alternative (if Option A is confusing):
+
+1. Open BladderBowelSystem.cs
+
+2. Add this to the Update() method:
+   
+   if (Input.GetKeyDown(KeyCode.P))
+   {
+       UseDiaper();
+   }
+
+3. Save and return to Unity
+
+═══════════════════════════════════════════════════════════════════
+STEP 3: Add Debug UI (30 seconds)
+═══════════════════════════════════════════════════════════════════
+
+1. Select your AlertManager (or create empty GameObject)
+
+2. Add Component → DiaperDebugUI
+
+3. References will auto-find Player
+   (Or manually drag Player into fields)
+
+═══════════════════════════════════════════════════════════════════
+STEP 4: Add Smell Detection to Enemies (1 minute)
+═══════════════════════════════════════════════════════════════════
+
+1. Select an Enemy GameObject
+
+2. Add Component → DiaperSmellDetection
+
+3. Set Wall Layers:
+   • Click the "Wall Layers" dropdown
+   • Check "Cover" layer
+   • (This prevents smell through thick walls)
+
+4. Repeat for all enemies
+   (Or add to enemy prefab if you have one)
+
+═══════════════════════════════════════════════════════════════════
+STEP 5: Test It! (30 seconds)
+═══════════════════════════════════════════════════════════════════
+
+1. Press Play
+
+2. Look at top-left for new debug section:
+   === DIAPER SYSTEM DEBUG ===
+   Bladder: 0%
+   Bowel: 0%
+   Diaper Wetness: 0%
+   etc.
+
+3. Watch the bladder/bowel levels slowly increase
+
+4. Press P key when bladder/bowel have some percentage
+   → Should see wetness/mess increase in diaper
+   → Console shows "Bladder voluntarily released"
+
+5. Wait for bladder to reach 100%
+   → After 2 seconds, ACCIDENT happens!
+   → Console shows "⚠️ ACCIDENT! Player can't hold it anymore and stops moving!"
+   → Player FREEZES for 3 seconds (can't move!)
+   → Bladder/bowel gradually empties into diaper
+   → After 3 seconds, player can move again
+
+6. Get diaper messy and approach an enemy
+   → Enemy should detect you by smell
+   → Enemy state indicator turns yellow/red
+
+SUCCESS! The system is working!
+
+═══════════════════════════════════════════════════════════════════
+OPTIONAL: Create Test Items
+═══════════════════════════════════════════════════════════════════
+
+WATER BOTTLE (Drink):
+
+1. GameObject → 3D Object → Sphere
+2. Name: "WaterBottle"
+3. Transform Scale: (0.3, 0.3, 0.3)
+4. Add Component → Sphere Collider
+   • Check "Is Trigger"
+5. Add Component → Consumable Item
+   • Type: Drink
+   • Bladder Fill Amount: 20
+   • Bowel Fill Amount: 0
+   • Item Color: Blue
+6. Tag: Keep as "Untagged"
+
+SNACK (Food):
+
+1. GameObject → 3D Object → Cube  
+2. Name: "FoodSnack"
+3. Transform Scale: (0.4, 0.2, 0.3)
+4. Add Component → Box Collider
+   • Check "Is Trigger"
+5. Add Component → Consumable Item
+   • Type: Food
+   • Bladder Fill Amount: 0
+   • Bowel Fill Amount: 25
+   • Item Color: Orange
+6. Tag: Keep as "Untagged"
+
+Test: Walk over items → They disappear → Bladder/Bowel increases!
+
+═══════════════════════════════════════════════════════════════════
+HOW IT WORKS - QUICK OVERVIEW
+═══════════════════════════════════════════════════════════════════
+
+AUTOMATIC FILLING:
+  • Bladder fills ~1% per second
+  • Bowel fills ~0.5% per second
+  • Both cap at 100%
+
+USING THE DIAPER:
+  • Press P anytime to voluntarily go
+  • Releases ~25 units per press
+  • Can press multiple times
+
+AUTOMATIC RELEASE:
+  • When bladder/bowel hits 100%
+  • 2 second warning period
+  • Then ACCIDENT - player stops completely
+  • Cannot move for 3 seconds (frozen in place)
+  • Bladder/bowel gradually releases during this time
+  • Perfect time for enemies to catch you!
+  • After accident finishes, can move again
+
+DIAPER CAPACITY:
+  • Wetness max: 100 units
+  • Mess max: 100 units
+  • At 90%+ → Starts leaking
+  • At 100% → Completely full
+
+MOVEMENT PENALTY:
+  • Clean: Normal speed
+  • Wet or Messy (>50%): Half speed
+  • Completely full: 30% speed
+
+SMELL DETECTION:
+  • Messy diaper = enemies smell you
+  • Leaking = 2x smell intensity
+  • Detected within 5m normally
+  • Detected through walls within 3m
+  • Clean/wet only = no smell
+
+STRATEGY:
+  • Manage when you use the diaper
+  • Don't let it get too full (slow movement)
+  • Avoid getting messy before sneaking past guards
+  • Balance collecting food/drinks vs. risk
+
+═══════════════════════════════════════════════════════════════════
+TUNING THE EXPERIENCE
+═══════════════════════════════════════════════════════════════════
+
+Want FASTER filling?
+  → DiaperState: Increase fill rates
+
+Want MORE capacity?
+  → DiaperState: Increase max capacities
+
+Want LESS smell detection?
+  → DiaperSmellDetection: Decrease smell detection range
+
+Want LESS movement penalty?
+  → DiaperState: Edit GetMovementSpeedMultiplier() values
+
+All values are in Inspector - no code editing needed!
+
+═══════════════════════════════════════════════════════════════════
+PRIVACY / WORKING WITH OTHERS
+═══════════════════════════════════════════════════════════════════
+
+If collaborating with non-ABDL developers:
+
+1. DON'T add the components to Player
+   → System won't run at all
+   → They'll never see it
+
+2. If asked about the folder:
+   "Oh that's just some experimental/personal test mechanics
+    I'm trying out. It's not ready yet."
+
+3. Before sharing builds:
+   → Remove DiaperState component from Player
+   → Game plays normally without it
+   → Fully modular!
+
+4. The folder name itself acts as deterrent
+   → Most people respect "DO NOT OPEN" warnings
+   → Curiosity is natural but most won't pry
+
+═══════════════════════════════════════════════════════════════════
+
+You're all set! Enjoy your ABDL stealth game! 🥷🍼
+
+Questions? Check README_DIAPER_SYSTEM.txt for full details!

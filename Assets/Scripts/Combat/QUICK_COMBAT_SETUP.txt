@@ -1,0 +1,251 @@
+═══════════════════════════════════════════════════════════════════
+  🚀 QUICK COMBAT SETUP - 10 Minutes to Stylish Action!
+═══════════════════════════════════════════════════════════════════
+
+Follow these steps to activate the Aragami 2 + Bayonetta combat!
+
+═══════════════════════════════════════════════════════════════════
+STEP 1: Add Combat to Player (3 minutes)
+═══════════════════════════════════════════════════════════════════
+
+1. Select Player GameObject in Hierarchy
+
+2. Add these components (click "Add Component" for each):
+   
+   ☐ PlayerCombat
+   ☐ ComboSystem
+   ☐ LockOnSystem
+   ☐ DodgeSystem
+   ☐ ParrySystem
+   ☐ PlayerHealth
+   ☐ StyleRankSystem
+
+3. In PlayerCombat Inspector:
+   • Set "Enemy Layer" dropdown → check "Enemy" layer
+   (If "Enemy" layer doesn't exist, create it in Tags & Layers)
+
+4. That's it! Auto-referencing handles the rest!
+
+═══════════════════════════════════════════════════════════════════
+STEP 2: Setup Enemy Layer (1 minute)
+═══════════════════════════════════════════════════════════════════
+
+1. Top menu: Edit → Project Settings → Tags and Layers
+
+2. Under "Layers", find empty slot (e.g., Layer 8)
+
+3. Name it: "Enemy"
+
+4. Close Project Settings
+
+5. Select all Enemy GameObjects
+
+6. In Inspector, set Layer → "Enemy"
+
+═══════════════════════════════════════════════════════════════════
+STEP 3: Add Health to Enemies (2 minutes)
+═══════════════════════════════════════════════════════════════════
+
+1. Select an Enemy GameObject
+
+2. Add Component → EnemyHealth
+
+3. In Inspector, set:
+   • Max Health: 100 (or your preference)
+   • Can Be Launched: ✓ (checked)
+
+4. Repeat for all enemies
+   (Or add to enemy prefab if you have one)
+
+═══════════════════════════════════════════════════════════════════
+STEP 4: Setup Combat Input (4 minutes)
+═══════════════════════════════════════════════════════════════════
+
+OPTION A - New Input System (Recommended):
+
+1. Find your Input Actions asset
+   (Should be in Assets folder from stealth setup)
+
+2. Double-click to open
+
+3. Add these actions:
+   
+   Action Name          | Binding
+   ──────────────────────────────────────
+   LightAttack         | Mouse > Left Button
+   HeavyAttack         | Mouse > Right Button
+   Dodge               | Keyboard > Space
+   Parry               | Keyboard > Q
+   LockOn              | Keyboard > Tab
+   SwitchTargetLeft    | Keyboard > Q (or Mouse Scroll Up)
+   SwitchTargetRight   | Keyboard > E (or Mouse Scroll Down)
+
+4. Save Asset
+
+5. In Player GameObject > Player Input component:
+   
+   Under "Events" section, add event for each action:
+   
+   • LightAttack → PlayerCombat → OnLightAttack
+   • HeavyAttack → PlayerCombat → OnHeavyAttack
+   • Dodge → DodgeSystem → OnDodge
+   • Parry → ParrySystem → OnParry
+   • LockOn → LockOnSystem → OnLockOn
+   • SwitchTargetLeft → LockOnSystem → OnSwitchTargetLeft
+   • SwitchTargetRight → LockOnSystem → OnSwitchTargetRight
+
+
+OPTION B - Quick Test (Skip input setup temporarily):
+
+Can't figure out Input System? That's ok!
+You can test combat by calling functions directly in code.
+Come back to input setup later.
+
+═══════════════════════════════════════════════════════════════════
+STEP 5: Add Debug UI (30 seconds)
+═══════════════════════════════════════════════════════════════════
+
+1. Hierarchy > Right-click > Create Empty
+
+2. Name: "CombatDebugUI"
+
+3. Add Component → CombatDebugUI
+
+4. References auto-find Player
+
+═══════════════════════════════════════════════════════════════════
+STEP 6: Test It!
+═══════════════════════════════════════════════════════════════════
+
+1. Press Play
+
+2. Look at TOP-RIGHT for combat debug:
+   === COMBAT DEBUG ===
+   Health: 100/100
+   Style Rank: D
+   Style Points: 0
+   In Combat: NO
+
+3. Approach an enemy (get close)
+
+4. Press Mouse Left Button → Light attack!
+
+5. Try these:
+   • Mouse Left → Light attack
+   • Mouse Right → Heavy attack
+   • Space → Dodge
+   • Tab → Lock onto enemy
+   • Q → Parry (time it right!)
+
+6. Build combos:
+   L → L → L → L → L (5-hit combo!)
+   L → L → H (Launcher at 3rd hit!)
+
+7. Watch Style Rank climb: D → C → B → A → S → SS → SSS!
+
+SUCCESS! You have stylish combat!
+
+═══════════════════════════════════════════════════════════════════
+CONTROLS SUMMARY
+═══════════════════════════════════════════════════════════════════
+
+COMBAT:
+  Mouse Left     - Light Attack (fast combo)
+  Mouse Right    - Heavy Attack (strong finisher)
+  Space          - Dodge (i-frames!)
+  Q              - Parry (then Counter)
+  Tab            - Lock-On toggle
+  Q/E (or Scroll)- Switch lock target
+
+STEALTH (still works!):
+  WASD           - Move
+  Shift          - Sprint
+  C              - Crouch
+  P              - Use Diaper (if enabled)
+
+═══════════════════════════════════════════════════════════════════
+QUICK TIPS
+═══════════════════════════════════════════════════════════════════
+
+✅ Lock-On First
+   → Makes landing hits easier
+   → Better camera control
+   → Aragami 2 style!
+
+✅ Mix Light and Heavy
+   → Variety bonus!
+   → Higher style rank
+   → More damage
+
+✅ Use Dodge Offset
+   → Dodge during combo
+   → Combo doesn't break!
+   → Like Bayonetta!
+
+✅ Time Your Parries
+   → Stuns enemy
+   → Counter for huge damage
+   → Feel like a badass
+
+✅ Build That Style
+   → D is boring
+   → SSS is LEGENDARY
+   → Mix up your moves!
+
+═══════════════════════════════════════════════════════════════════
+WHAT MAKES THIS BETTER THAN ARAGAMI 2?
+═══════════════════════════════════════════════════════════════════
+
+✅ LAUNCHER ATTACK (3rd combo hit)
+   → Pops enemies into air
+   → Separates groups
+   → Less overwhelming!
+
+✅ DODGE OFFSET
+   → Reposition mid-combo
+   → Don't lose progress
+   → More forgiving
+
+✅ STYLE RANK
+   → Rewards mixing moves
+   → Makes you WANT to fight well
+   → DMC vibes
+
+✅ PERFECT DODGE SLOW-MO
+   → Time to think
+   → Plan your next move
+   → Bayonetta vibes
+
+✅ COMBO SYSTEM
+   → Clear hit progression
+   → Build to finisher
+   → Satisfying flow
+
+✅ PARRY COUNTER
+   → Turn defense into offense
+   → Big damage payoff
+   → Skill expression
+
+You get Aragami 2's tactical lock-on combat...
+But with Bayonetta/DMC's stylish, less frustrating mechanics!
+
+Best of both worlds! 🥷⚔️✨
+
+═══════════════════════════════════════════════════════════════════
+NEXT STEPS
+═══════════════════════════════════════════════════════════════════
+
+Once basic combat works:
+
+☐ Tune damage values to your liking
+☐ Adjust combo timing
+☐ Tweak dodge i-frames
+☐ Add more enemies to test crowd control
+☐ Experiment with launcher combos
+☐ Try to hit SSS rank!
+☐ Read COMBAT_SYSTEM_README.txt for deep dive
+
+═══════════════════════════════════════════════════════════════════
+
+You're ready to kick ass in style! 🔥
+

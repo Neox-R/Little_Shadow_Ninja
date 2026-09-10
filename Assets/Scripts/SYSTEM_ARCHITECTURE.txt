@@ -1,0 +1,392 @@
+═══════════════════════════════════════════════════════════════════
+  LITTLE SHADOW NINJA - STEALTH SYSTEM ARCHITECTURE
+═══════════════════════════════════════════════════════════════════
+
+This document explains how the stealth system works and how components
+interact with each other.
+
+═══════════════════════════════════════════════════════════════════
+FOLDER STRUCTURE
+═══════════════════════════════════════════════════════════════════
+
+/Assets/Scripts/
+├── Player/
+│   ├── PlayerController.cs          # Movement & input handling
+│   └── PlayerVisibility.cs          # Calculates player detectability
+├── Enemy/
+│   ├── EnemyAwareness.cs            # State machine (Idle/Suspicious/Alert)
+│   ├── EnemyVision.cs               # Line of sight & FOV detection
+│   └── EnemyPatrol.cs               # NavMesh waypoint navigation
+├── Environment/
+│   └── ShadowZone.cs                # Defines shadow hiding areas
+├── Systems/
+│   └── AlertManager.cs              # Global alert coordination
+└── Debug/
+    ├── VisibilityDebugUI.cs         # On-screen debug info
+    └── EnemyStateVisualizer.cs      # Visual enemy state indicators
+
+═══════════════════════════════════════════════════════════════════
+PLAYER SYSTEM
+═══════════════════════════════════════════════════════════════════
+
+PlayerController
+─────────────────
+  Purpose: Handles player movement and input
+  
+  Key Features:
+    • WASD/Arrow Key movement relative to camera
+    • Crouch toggle (C key)
+    • Sprint hold (Left Shift)
+    • Character rotation towards movement
+    • Adjustable speeds for walk/crouch/sprint
+  
+  Public Properties:
+    • IsCrouching: bool
+    • IsSprinting: bool
+    • CurrentSpeed: float
+  
+  Input Methods:
+    • OnMove(InputAction.CallbackContext)
+    • OnCrouch(InputAction.CallbackContext)
+    • OnSprint(InputAction.CallbackContext)
+
+PlayerVisibility
+─────────────────
+  Purpose: Calculates how visible the player is to enemies
+  
+  Calculation Formula:
+    visibility = base * crouchMod * shadowMod + movementBonus
+  
+  Modifiers:
+    • Base visibility: 1.0
+    • Crouching: ×0.5
+    • In shadow: ×0.2
+    • Moving: +0.3
+  
+  Example Scenarios:
+    • Standing still in light: 1.0 (very visible)
+    • Crouching in light: 0.5 (moderately visible)
+    • Crouching in shadow while still: 0.1 (nearly invisible)
+    • Running in shadow: ~0.4 (still somewhat visible)
+  
+  Public Properties:
+    • CurrentVisibility: float (0-2 range)
+    • IsInShadow: bool
+
+═══════════════════════════════════════════════════════════════════
+ENEMY AI SYSTEM
+═══════════════════════════════════════════════════════════════════
+
+EnemyAwareness
+─────────────────
+  Purpose: State machine managing enemy awareness of player
+  
+  States:
+    ┌─────────────┐
+    │    IDLE     │ ← Awareness < 30
+    └─────────────┘
+          ↓ Sees player
+    ┌─────────────┐
+    │ SUSPICIOUS  │ ← Awareness 30-100
+    └─────────────┘
+          ↓ Full detection
+    ┌─────────────┐
+    │    ALERT    │ ← Awareness = 100
+    └─────────────┘
+  
+  Awareness Level:
+    • Increases when enemy sees player
+    • Rate depends on player visibility
+    • Decays over time when not seeing player
+    • Alert state has cooldown before decay
+  
+  Public Methods:
+    • IncreaseAwareness(float amount)
+    • ForceAlert()
+  
+  Events:
+    • OnStateChanged(AwarenessState)
+
+EnemyVision
+─────────────────
+  Purpose: Handles line of sight and field of view detection
+  
+  Detection Process:
+    1. Player enters detection radius (sphere collider)
+    2. Start continuous visibility checks (every 0.2s)
+    3. For each check:
+       ├─ Get player's 8 bounding box corners
+       ├─ For each corner:
+       │  ├─ Check if within FOV angle
+       │  ├─ Check distance within range
+       │  └─ Raycast to check for cover
+       └─ If ANY corner visible → increase awareness
+  
+  Settings:
+    • Vision Range: 10m (sphere collider radius)
+    • Field of View: 90° (cone in front)
+    • Detection Rate: 20 points/second
+    • Check Frequency: Every 0.2 seconds
+  
+  Formula:
+    awarenessIncrease = baseRate × playerVisibility × checkDelay
+  
+  Cover System:
+    • Raycasts check for objects on "Cover" layer
+    • If cover blocks ALL player corners → player hidden
+    • If ANY corner visible → player can be detected
+  
+  Visual Debug:
+    • Yellow wire sphere shows detection range
+    • Blue lines show FOV cone boundaries
+    • Visible when enemy selected in Scene view
+
+EnemyPatrol
+─────────────────
+  Purpose: NavMesh-based waypoint patrol with state-aware behavior
+  
+  Behavior per State:
+  
+    IDLE State:
+      • Patrol between waypoints in order
+      • Wait at each waypoint (waypointWaitTime)
+      • Move at patrolSpeed
+      • Loop back to first waypoint
+    
+    SUSPICIOUS State:
+      • Move to last known player position
+      • Move at patrolSpeed
+      • Wait at location until awareness decays
+    
+    ALERT State:
+      • Chase player directly
+      • Update destination to player position
+      • Move at chaseSpeed (faster)
+      • Track last known position
+  
+  Waypoint System:
+    • Assign Transform[] array in Inspector
+    • Creates patrol loop automatically
+    • Visualizes path with cyan gizmos
+  
+  Speed Settings:
+    • Patrol Speed: 2 m/s (normal walking)
+    • Chase Speed: 5 m/s (running)
+
+═══════════════════════════════════════════════════════════════════
+ENVIRONMENT SYSTEM
+═══════════════════════════════════════════════════════════════════
+
+ShadowZone
+─────────────────
+  Purpose: Defines areas where players can hide in shadows
+  
+  Setup:
+    • BoxCollider set to trigger
+    • Tagged as "Shadow"
+    • Scale to cover dark areas
+  
+  Behavior:
+    • When player enters: isInShadow = true
+    • When player exits: isInShadow = false
+    • PlayerVisibility reads this state
+  
+  Visual:
+    • Shows semi-transparent dark box in Scene view
+    • Not visible in Game view (invisible in gameplay)
+  
+  Best Placement:
+    • Under platforms/stairs
+    • Behind large objects
+    • In corners
+    • Dark alleys/rooms
+
+═══════════════════════════════════════════════════════════════════
+GLOBAL SYSTEMS
+═══════════════════════════════════════════════════════════════════
+
+AlertManager
+─────────────────
+  Purpose: Coordinates enemy alerts across the level
+  
+  Features:
+    • Singleton pattern (one instance)
+    • Auto-registers all enemies on Start
+    • Propagates alerts between nearby enemies
+    • Tracks global alert level
+  
+  Alert Propagation:
+    When ANY enemy reaches Alert state:
+      1. Find all enemies within propagationRadius
+      2. Add 50 awareness to each
+      3. Set global alert to 100%
+  
+  This creates the "heat" mechanic where:
+    • Getting spotted alerts nearby guards
+    • Creating coordinated response
+    • Forces player to hide and wait
+  
+  Global Alert Decay:
+    • Only decays when NO enemies are alerted
+    • Represents "overall level security"
+    • Decays at 5 points/second
+  
+  Settings:
+    • Alert Propagation Radius: 20m
+    • Global Decay Rate: 5/second
+
+═══════════════════════════════════════════════════════════════════
+DEBUG SYSTEMS
+═══════════════════════════════════════════════════════════════════
+
+VisibilityDebugUI
+─────────────────
+  Purpose: Shows real-time stealth stats on screen
+  
+  Displays:
+    • Player visibility (color-coded)
+    • Shadow status
+    • Global alert level
+    • Enemy state counts
+  
+  Color Coding:
+    • Green: Safe/Low
+    • Yellow: Caution/Medium
+    • Red: Danger/High
+  
+  Usage:
+    • Add to any GameObject (e.g., AlertManager)
+    • Auto-finds PlayerVisibility and AlertManager
+    • Toggle showDebugUI on/off
+
+EnemyStateVisualizer
+─────────────────
+  Purpose: Visual indicator above enemy heads
+  
+  Features:
+    • Creates floating sphere above enemy
+    • Color matches awareness state:
+      - Green: Idle
+      - Yellow: Suspicious
+      - Red: Alert
+    • Updates in real-time
+    • Automatically destroyed with enemy
+  
+  Usage:
+    • Add to each Enemy GameObject
+    • Requires EnemyAwareness component
+    • Shows in both Scene and Game view
+
+═══════════════════════════════════════════════════════════════════
+SYSTEM INTERACTIONS FLOW
+═══════════════════════════════════════════════════════════════════
+
+1. PLAYER MOVEMENT
+   PlayerController → handles input → moves character
+   
+2. VISIBILITY CALCULATION
+   PlayerController → provides crouch/movement state
+   ShadowZone → provides shadow state
+   PlayerVisibility → calculates final visibility value
+   
+3. ENEMY DETECTION
+   EnemyVision → checks if player in range
+   EnemyVision → performs LOS/FOV checks
+   EnemyVision → reads PlayerVisibility value
+   EnemyVision → calls EnemyAwareness.IncreaseAwareness()
+   
+4. STATE CHANGES
+   EnemyAwareness → updates awareness level
+   EnemyAwareness → changes state (Idle/Suspicious/Alert)
+   EnemyAwareness → fires OnStateChanged event
+   
+5. BEHAVIOR RESPONSE
+   EnemyPatrol → listens to OnStateChanged
+   EnemyPatrol → adjusts behavior based on state
+   NavMeshAgent → executes movement
+   
+6. ALERT PROPAGATION
+   EnemyAwareness → reaches Alert state
+   EnemyAwareness → triggers event
+   AlertManager → receives event
+   AlertManager → propagates to nearby enemies
+   
+7. HEAT COOLDOWN
+   Player → hides from all enemies
+   EnemyAwareness → awareness decays
+   EnemyAwareness → returns to Suspicious → Idle
+   AlertManager → global alert decays
+   Enemies → return to patrol
+
+═══════════════════════════════════════════════════════════════════
+TUNING GUIDE
+═══════════════════════════════════════════════════════════════════
+
+Making Detection Harder:
+  • Decrease baseDetectionRate in EnemyVision
+  • Decrease fieldOfView angle
+  • Decrease visionRange
+  • Increase shadowVisibilityMultiplier (closer to 1.0)
+  • Increase suspicionDecayRate in EnemyAwareness
+
+Making Detection Easier:
+  • Increase baseDetectionRate in EnemyVision
+  • Increase fieldOfView angle
+  • Increase visionRange
+  • Decrease shadowVisibilityMultiplier (closer to 0.0)
+  • Decrease suspicionDecayRate in EnemyAwareness
+
+Adjusting Heat Mechanics:
+  • alertCooldownTime: How long enemies stay alert
+  • alertPropagationRadius: How far alerts spread
+  • suspicionThreshold: How quickly enemies get suspicious
+  • alertThreshold: How quickly enemies get fully alerted
+
+Adjusting Movement Feel:
+  • walkSpeed, sprintSpeed, crouchSpeed in PlayerController
+  • patrolSpeed, chaseSpeed in EnemyPatrol
+  • rotationSpeed for turning responsiveness
+
+═══════════════════════════════════════════════════════════════════
+EXTENDING THE SYSTEM
+═══════════════════════════════════════════════════════════════════
+
+Ready for Future Features:
+
+1. Combat System Integration
+   • Add PlayerStateManager (Stealth/Combat modes)
+   • EnemyAwareness already has Alert state
+   • Can trigger combat behavior from Alert state
+   • Share awareness/alert systems
+
+2. Sound Detection
+   • Add EnemyHearing component
+   • Use similar pattern to EnemyVision
+   • Increase awareness based on noise
+   • Integrate with PlayerController movement speed
+
+3. Shadow Teleportation (Aragami-style)
+   • Add ShadowTeleport component to Player
+   • Use ShadowZone system to find valid targets
+   • Raycast between shadow zones
+   • Trigger from Input Action
+
+4. Abilities & Powers
+   • Add AbilityManager to Player
+   • Can affect PlayerVisibility modifiers
+   • Can interact with EnemyAwareness
+   • Use Input System for activation
+
+5. Advanced AI
+   • Add EnemyMemory component
+   • Store last known positions
+   • Coordinate search patterns
+   • Call for reinforcements
+
+═══════════════════════════════════════════════════════════════════
+
+This modular architecture makes it easy to add features without
+rewriting existing systems. Each component has a single responsibility
+and communicates through clear interfaces (events, properties).
+
+Ready to build your stealth-action masterpiece! 🥷✨

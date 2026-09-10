@@ -1,0 +1,222 @@
+═══════════════════════════════════════════════════════════════════
+  🥷 QUICK START - GET PLAYING IN 10 MINUTES! 🥷
+═══════════════════════════════════════════════════════════════════
+
+Follow these steps to get a playable prototype running FAST!
+
+═══════════════════════════════════════════════════════════════════
+STEP 1: CREATE TAGS (2 minutes)
+═══════════════════════════════════════════════════════════════════
+
+1. Go to: Edit > Project Settings > Tags and Layers
+2. Click the "+" under Tags section
+3. Add these tags:
+   ✓ Shadow
+   ✓ Enemy
+
+Note: "Player" tag should already exist
+
+═══════════════════════════════════════════════════════════════════
+STEP 2: CREATE LAYERS (2 minutes)
+═══════════════════════════════════════════════════════════════════
+
+1. Still in: Edit > Project Settings > Tags and Layers
+2. In the "Layers" section, assign these to empty slots:
+   ✓ Player (use slot 6)
+   ✓ Enemy (use slot 7)
+   ✓ Cover (use slot 8)
+   ✓ Ground (use slot 9)
+   ✓ Shadow (use slot 10)
+
+═══════════════════════════════════════════════════════════════════
+STEP 3: CREATE TEST SCENE (3 minutes)
+═══════════════════════════════════════════════════════════════════
+
+1. Create a new scene: File > New Scene > Basic (Built-in)
+2. Save it: Assets/Scenes/TestStealth.unity
+
+3. CREATE GROUND:
+   • GameObject > 3D Object > Plane
+   • Name: "Ground"
+   • Scale: (5, 1, 5)
+   • Layer: Ground
+   • Check "Navigation Static" in Inspector (top right)
+
+4. CREATE COVER:
+   • GameObject > 3D Object > Cube
+   • Name: "Wall"
+   • Position: (3, 1, 0)
+   • Scale: (0.5, 2, 4)
+   • Layer: Cover
+   • Check "Navigation Static"
+   • Duplicate a few times around the scene
+
+5. BAKE NAVMESH:
+   • Window > AI > Navigation
+   • Click "Bake" tab
+   • Click "Bake" button
+   • You should see blue overlay on walkable areas
+
+═══════════════════════════════════════════════════════════════════
+STEP 4: ADD PLAYER (2 minutes)
+═══════════════════════════════════════════════════════════════════
+
+Option A - Using Starter Assets (RECOMMENDED):
+   1. Find: Assets/StarterAssets/ThirdPersonController/Prefabs
+   2. Drag "NestedParentArmature" into scene
+   3. Select the "PlayerArmature" child object
+   4. Add Component > Player Controller
+   5. Add Component > Player Visibility
+   6. Set Layer to: Player
+   7. Set Tag to: Player
+   8. Position at (0, 0, 0)
+
+Option B - Simple Capsule:
+   1. GameObject > 3D Object > Capsule
+   2. Name: "Player"
+   3. Add Component > Character Controller
+   4. Add Component > Player Input
+   5. Add Component > Player Controller
+   6. Add Component > Player Visibility
+   7. Set Layer to: Player
+   8. Set Tag to: Player
+   9. Create new material (blue), assign to capsule
+
+═══════════════════════════════════════════════════════════════════
+STEP 5: ADD ENEMY (2 minutes)
+═══════════════════════════════════════════════════════════════════
+
+1. GameObject > 3D Object > Capsule
+2. Name: "Enemy"
+3. Position: (5, 1, 0)
+4. Create red material, assign it
+5. Add Component > Nav Mesh Agent
+6. Add Component > Enemy Awareness
+7. Add Component > Enemy Vision
+8. Add Component > Enemy Patrol
+9. Add Component > Enemy State Visualizer (optional but helpful!)
+10. Set Layer to: Enemy
+11. Set Tag to: Enemy
+
+CONFIGURE ENEMY VISION:
+   • In Inspector, find "Enemy Vision" component
+   • Expand "Cover Layer" dropdown
+   • Check the "Cover" layer
+
+CREATE WAYPOINTS:
+   1. GameObject > Create Empty (make 3-4 of these)
+   2. Name them: Waypoint_1, Waypoint_2, etc.
+   3. Position them in different spots (keep on ground!)
+   4. Select Enemy
+   5. In "Enemy Patrol" component, set Waypoints size to match count
+   6. Drag each waypoint into the array slots
+
+═══════════════════════════════════════════════════════════════════
+STEP 6: ADD SHADOW ZONES (1 minute)
+═══════════════════════════════════════════════════════════════════
+
+1. GameObject > Create Empty
+2. Name: "ShadowZone"
+3. Add Component > Shadow Zone
+4. Position near a wall: (3, 0.5, 2)
+5. Scale: (2, 1, 2)
+6. Tag: Shadow (should auto-set)
+7. Duplicate a few times, place strategically
+
+═══════════════════════════════════════════════════════════════════
+STEP 7: ADD MANAGERS (30 seconds)
+═══════════════════════════════════════════════════════════════════
+
+1. GameObject > Create Empty
+2. Name: "AlertManager"
+3. Add Component > Alert Manager
+4. Add Component > Visibility Debug UI (for on-screen info)
+
+═══════════════════════════════════════════════════════════════════
+STEP 8: CONFIGURE CAMERA
+═══════════════════════════════════════════════════════════════════
+
+If using Starter Assets:
+   ✓ Camera already configured! You're done!
+
+If using simple capsule player:
+   1. Select Main Camera
+   2. Position: (0, 5, -8)
+   3. Rotation: (30, 0, 0)
+   4. Or install Cinemachine and follow tutorials
+
+═══════════════════════════════════════════════════════════════════
+STEP 9: TEST! 🎮
+═══════════════════════════════════════════════════════════════════
+
+1. Press PLAY!
+
+2. CONTROLS:
+   • WASD or Arrows: Move
+   • C: Crouch
+   • Left Shift: Sprint
+   • Mouse: Look (if using Starter Assets)
+
+3. WHAT TO LOOK FOR:
+   ✓ Enemy has colored sphere above head (green = idle)
+   ✓ Enemy walks between waypoints
+   ✓ Top-left shows debug info (visibility, alerts, etc.)
+   ✓ Shadow zones show as dark transparent boxes in Scene view
+   ✓ When you approach enemy, sphere turns yellow then red
+   ✓ Red = enemy chases you!
+   ✓ Enter shadow zone → visibility should drop (check debug UI)
+   ✓ Crouch → visibility should drop
+   ✓ Hide in shadow + crouch = nearly invisible!
+   ✓ If you break line of sight, enemy searches then returns to patrol
+
+═══════════════════════════════════════════════════════════════════
+TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════
+
+❌ Player doesn't move:
+   → Check PlayerController is attached
+   → If using starter assets, check PlayerInput component
+   → If simple capsule, you need to set up Input Actions
+
+❌ Enemy doesn't move:
+   → Check NavMesh is baked (blue overlay in Scene view)
+   → Check waypoints are assigned
+   → Check Nav Mesh Agent component exists
+
+❌ Enemy doesn't see player:
+   → Check player has "Player" tag
+   → Check Cover Layer is set in Enemy Vision
+   → Select enemy in Scene view - you should see yellow detection sphere
+
+❌ Shadow zones don't work:
+   → Check ShadowZone tag is "Shadow"
+   → Check BoxCollider "Is Trigger" is checked
+   → Watch debug UI in top-left for "In Shadow: True"
+
+❌ Console shows errors:
+   → Make sure all tags/layers are created
+   → Check all components are on correct GameObjects
+
+═══════════════════════════════════════════════════════════════════
+NEXT STEPS AFTER IT WORKS
+═══════════════════════════════════════════════════════════════════
+
+1. ✨ Add more enemies with different patrol routes
+2. ✨ Build a bigger level with more cover
+3. ✨ Add more shadow zones in strategic spots
+4. ✨ Experiment with enemy settings (FOV, detection speed)
+5. ✨ Test how different visibility levels affect detection
+6. ✨ Create a goal (reach point without being caught)
+7. 📖 Read SYSTEM_ARCHITECTURE.txt to understand how it works
+8. 🎯 Start planning your first stealth mission!
+
+═══════════════════════════════════════════════════════════════════
+
+Need more help? Check these files:
+  • SETUP_GUIDE.txt - Detailed step-by-step setup
+  • SYSTEM_ARCHITECTURE.txt - How everything works together
+
+Console showing debug messages is NORMAL and HELPFUL!
+They tell you what the AI is thinking.
+
+Have fun building your stealth game! 🥷✨

@@ -2,12 +2,12 @@
   🥷 LITTLE SHADOW NINJA - STEALTH SYSTEM 🥷
 ═══════════════════════════════════════════════════════════════════
 
-Welcome to your complete Aragami-inspired stealth system prototype!
+Welcome to my Aragami-inspired stealth game!
 All scripts and documentation have been created and are ready to use.
 
 CONTENT WARNING!!!!!!!!
 The game is generally AB/DL and diaperfur themed so if you are not into that do NOT proceed!
-This game ais a stupid/funny Hobby idea i came up randomly
+This game ais a stupid/funny Hobby idea i came up randomly. i know i am weird but we all have free will
 
 ═══════════════════════════════════════════════════════════════════
 📁 WHAT'S INCLUDED

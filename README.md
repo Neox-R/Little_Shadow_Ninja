@@ -4,7 +4,7 @@
 
 Welcome to my Aragami-inspired stealth game!
 All scripts and documentation have been created and are ready to use.
-
+(Still in Testing tho)
 
 ═══════════════════════════════════════════════════════════════════
 📁 WHAT'S INCLUDED
